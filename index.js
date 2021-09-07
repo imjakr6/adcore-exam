@@ -1,9 +1,9 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require('express');
+const app = express();
+const port = 5000;
 
-const parseCSV = require("./parseCSV.js")
-const Tree = require('./Tree.js')
+const parseCSV = require("./parseCSV.js");
+const Tree = require('./Tree.js');
 
 const tree = new Tree();
 
