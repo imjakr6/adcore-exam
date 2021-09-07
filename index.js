@@ -2,42 +2,21 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-const fs = require('fs');
-const csv = require('csv-parser');
-const async = require('async');
-const inputFile='tree_data.csv';
+const parseCSV = require("./parseCSV.js")
+const Tree = require('./Tree.js')
 
-
-var nodes=[{
-    id: 0,
-    name: "root"
-}];
-
-
-function parseCSV(){
-    var parser = csv({separator: '\t'})
-    .on('data', (data) => nodes.push(data))
-    .on('error', (err) => {
-        console.error(err.message)
-      })
-    .on('end', () => {
-        console.log(nodes);
-    });
-         
-    fs.createReadStream(inputFile).pipe(parser);
-}
-
+const tree = new Tree();
 
 app.get('/get_tree', (req, res) => {
-  parseCSV();
-  res.send(nodes);
+  parseCSV(tree, res);
 })
 
 app.post('/update_node', (req, res) => {
     const id = req.body.id;
     const name = req.body.name;
-
-    res.send(200);
+    
+    var result = tree.updateNode(id, name);
+    res.send(result);
 })
 
 app.delete('/delete_node', (req, res) => {
@@ -48,8 +27,8 @@ app.delete('/delete_node', (req, res) => {
 app.post('/create_node', (req, res) => {
     const parent = req.body.parent;
     const node = req.body.node;
-    const tempID = 0;
-    res.send(tempID);
+    const result = tree.addNewNode(parent, node);
+    res.send(result);
 })
 
 app.post('/export_csv', (req, res) => {
