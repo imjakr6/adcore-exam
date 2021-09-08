@@ -61,6 +61,10 @@ app.post('/export_csv', (req, res) => {
   // console.log(csv)
 })
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
