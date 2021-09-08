@@ -13,7 +13,7 @@ const tree = new Tree();
 var newTree;
 app.use(jsonParser);
 
-app.use(express.static(path.join(__dirname, 'client/build' )));
+app.use(express.static(path.join(__dirname, './client/build' )));
 
 app.get('/get_tree', async (req, res) => {
    newTree = parseCSV(tree, res);
@@ -57,9 +57,13 @@ app.post('/export_csv', (req, res) => {
   // console.log(csv)
 })
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
-});
+app.get('*', function(_, res) {
+  res.sendFile(path.join(__dirname, './client/build/index.html'), function(err) {
+    if (err) {
+      res.status(500).send(err)
+    }
+  })
+})
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
