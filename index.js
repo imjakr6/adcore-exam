@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser')
+const path = require('path');
 
 const parseCSV = require("./parseCSV.js");
 const Tree = require('./Tree.js');
@@ -10,17 +11,14 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const port = process.env.PORT || 5000;
 const tree = new Tree();
 var newTree;
+app.use(jsonParser);
+
+const buildPath = path.join(__dirname, '..', 'build');
+app.use(express.static(buildPath));
 
 app.get("/", (req, res) => {
   res.send("Home Page");
 })
-
-app.use(jsonParser);
-// app.use(express.static(path.join(__dirname, 'build')));
-
-// app.get('/*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
 
 app.get('/get_tree', async (req, res) => {
    newTree = parseCSV(tree, res);
