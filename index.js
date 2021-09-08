@@ -15,10 +15,6 @@ app.use(jsonParser);
 
 app.use(express.static(path.join(__dirname, 'client/build' )));
 
-app.get("/", (req, res) => {
-  res.send("Home Page");
-})
-
 app.get('/get_tree', async (req, res) => {
    newTree = parseCSV(tree, res);
 })
