@@ -3,6 +3,9 @@ const bodyParser = require('body-parser')
 const path = require('path');
 const filePath = "./client/build/index.html"
 const resolvedPath = path.resolve(filePath);
+const options = {
+  root: __dirname + '/client/build/',
+};
 
 const parseCSV = require("./parseCSV.js");
 const Tree = require('./Tree.js');
@@ -60,7 +63,7 @@ app.post('/export_csv', (req, res) => {
 })
 
 app.get('*', (req, res) => {
-  res.sendFile(resolvedPath,(err) => {
+  res.sendFile("index.html", options ,(err) => {
     if (err) {
       res.status(500).send(err)
     }
