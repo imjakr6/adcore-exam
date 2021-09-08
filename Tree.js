@@ -52,6 +52,9 @@ module.exports = class Tree{
 
     deleteNode(id){
         const node = this.findNode(id);
+        const parentNode = this.findParentNode(id);
+
+
         if(!node){
             console.log("No node exists with that id");
                 return 400;
@@ -60,10 +63,16 @@ module.exports = class Tree{
             console.log("cannot delete read only nodes");
             return 400;
         }
-            //check if the node has children and assign those to parents children / update there parent
-
-            //remove this node from parents children
-
+        
+        //if this node has children assign them to parent node
+        //TODO: loop through node.children and assignt their parent to new parent value
+        if(node.children){
+           parentNode.children = [...parentNode.children, node.children]
+        } 
+        const index =  parentNode.children.indexOf(id);
+        if (index > -1) {
+            parentNode.children.splice(index, 1);
+        }
             return 200;
     }
 
@@ -98,13 +107,6 @@ module.exports = class Tree{
         }
         return;
     }
-
-    // printTree(){
-    //     console.log(this.root);
-    //     for(const child of this.root.children){
-    //         console.log(child);
-    //     }
-    // }
 }
 
 function Node(node){

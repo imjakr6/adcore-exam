@@ -3,7 +3,7 @@ import ReactTree from 'react-d3-tree';
 import axios from 'axios';
 
 import './App.css';
-import AddNode from './AddNode';
+import CreateNode from './CreateNode';
 import DeleteNode from './DeleteNode';
 import UpdateNode from './UpdateNode';
 
@@ -17,7 +17,7 @@ class App extends Component {
       read_only: 1,
       children: []
     },
-    newNode: false,
+    createNode: false,
     deleteNode: false,
     updateNode: false
   };
@@ -38,46 +38,49 @@ class App extends Component {
     return body;
   }
 
-  toggleNewNode = () => {
-    this.setState({deleteNode: false, updateNode: false, newNode: !this.state.newNode})
+  toggleCreateNode = () => {
+    this.setState({deleteNode: false, updateNode: false, createNode: !this.state.createNode})
   }
 
   toggleDeleteNode = () => {
-    this.setState({newNode: false, updateNode: false, deleteNode: !this.state.deleteNode})
+    this.setState({createNode: false, updateNode: false, deleteNode: !this.state.deleteNode})
   }
 
   toggleUpdateNode = () => {
-    this.setState({newNode: false, deleteNode: false, updateNode: !this.state.updateNode})
+    this.setState({createNode: false, deleteNode: false, updateNode: !this.state.updateNode})
   }
 
-  createNode = () => {
-      this.toggleNewNode();
+  createNode = (data) => {
+      const {id, name, description, parent, read_only} = data;
       const body = {
-      parent: 0, 
+      parent: parent, 
       node: {
-        id: "50",
-        name: "New Node",
-        description: "new node desc",
-        parent: "0",
-        read_only: "0",
+        id: id ?? "",
+        name: name ?? "",
+        description: description ?? "",
+        parent: parent ?? "",
+        read_only: read_only ?? "",
       }
     };
+
     axios.post('/create_node', body)
         .then(response => console.log({response}))
         .catch(error => console.error('There was an error!', error));
   }
 
-  updateNode = () => {
-    this.toggleUpdateNode();
-    const body = {id: 1, name: "Node 0"};
+  updateNode = (data) => {
+    const {id, name} = data;
+
+    const body = {id: id, name: name};
     axios.post('/update_node', body)
         .then(response => console.log({response}))
         .catch(error => console.error('There was an error!', error));
   }
 
-  deleteNode = () => {
-    this.toggleDeleteNode()
-    const body = {id: 17};
+  deleteNode = (data) => {
+    const {id} = data;
+    const body = {id: id};
+    console.log(data)
     axios.post('/delete_node', body)
         .then(response => console.log({response}))
         .catch(error => console.error('There was an error!', error));
@@ -119,13 +122,13 @@ class App extends Component {
               />
           </div>
           <div className="btn-container">
-            <button onClick={this.createNode}>Add</button>
-            <button onClick={this.deleteNode}>Delete</button>
-            <button onClick={this.updateNode}>Update</button>
+            <button style={{marginRight: 5}} onClick={this.toggleCreateNode}>Create</button>
+            <button style={{marginRight: 5}} onClick={this.toggleDeleteNode}>Delete</button>
+            <button style={{marginRight: 5}} onClick={this.toggleUpdateNode}>Update</button>
             <button onClick={this.exportNode}>Export</button>
-            {this.state.newNode && <AddNode/>}
-            {this.state.deleteNode && <DeleteNode/>}
-            {this.state.updateNode && <UpdateNode/>}
+            {this.state.createNode && <CreateNode onSubmit={(data) => this.createNode(data)}/>}
+            {this.state.deleteNode && <DeleteNode onSubmit={(data) => this.deleteNode(data)}/>}
+            {this.state.updateNode && <UpdateNode onSubmit={(data) => this.updateNode(data)}/>}
 
 
           </div>
