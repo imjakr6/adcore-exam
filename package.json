@@ -6,6 +6,9 @@
   "scripts": {
     "test": "test"
   },
+  "engines": {
+    "node": "16.8.0"
+  },
   "author": "Jake Lund",
   "license": "ISC",
   "dependencies": {
