@@ -9,13 +9,11 @@ const jsonParser = bodyParser.json()
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const port = 5000;
 const tree = new Tree();
-console.log(tree)
 var newTree;
 
 app.use(jsonParser);
 app.get('/get_tree', async (req, res) => {
    newTree = parseCSV(tree, res);
-   console.log(newTree)
 })
 
 app.post('/update_node', urlencodedParser, (req, res) => {
@@ -34,7 +32,6 @@ app.post('/delete_node', urlencodedParser, (req, res) => {
 app.post('/create_node', urlencodedParser, (req, res) => {
     const parent = req.body.parent;
     const node = req.body.node;
-    console.log(node)
     const result = tree.addNewNode(parent, node);
     // TODO: have better check (cannot create node with id 400)
     if(result == 400)
