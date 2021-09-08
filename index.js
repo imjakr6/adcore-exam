@@ -11,6 +11,10 @@ const port = process.env.PORT || 5000;
 const tree = new Tree();
 var newTree;
 
+app.get("/", (req, res) => {
+  res.send("Home Page");
+})
+
 app.use(jsonParser);
 // app.use(express.static(path.join(__dirname, 'build')));
 
