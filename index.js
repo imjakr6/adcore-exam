@@ -7,7 +7,7 @@ const Tree = require('./Tree.js');
 const app = express();
 const jsonParser = bodyParser.json()
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
-const port = 5000;
+const port = process.env.PORT || 5000;
 const tree = new Tree();
 var newTree;
 
