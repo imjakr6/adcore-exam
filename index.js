@@ -13,8 +13,11 @@ const tree = new Tree();
 var newTree;
 app.use(jsonParser);
 
-const buildPath = path.join(__dirname, '..', 'build');
-app.use(express.static(buildPath));
+app.use(express.static(path.join(__dirname, 'client/build' )));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
 
 app.get("/", (req, res) => {
   res.send("Home Page");
