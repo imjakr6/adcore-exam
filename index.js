@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 const path = require('path');
-const filePath = "./public/views/index.html"
+const filePath = "./client/build/index.html"
 const resolvedPath = path.resolve(filePath);
 
 const parseCSV = require("./parseCSV.js");
