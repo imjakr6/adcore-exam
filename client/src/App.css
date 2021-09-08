@@ -1,5 +1,29 @@
+div{
+  height: 100vh;
+}
+
+.page-container{
+  width: 100%;
+  height: 100%;
+}
+
 .tree-container{
   width: 100%;
+  height: 80%;
+}
+
+.btn-container{
+  width: 400px;
+  height: 20%;
+  margin:auto;
+}
+
+.new-node-container{
+  height: 200px;
+}
+
+.new-node-container-col{
+  height: 100px;
 }
 
 .node > circle{

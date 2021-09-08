@@ -21,7 +21,8 @@ module.exports = class Tree{
 
     //used when adding node to exsisting tree
     addNewNode(parent, node){
-        const newNode = Node(node);
+
+        const newNode = new Node(node);
         if(!newNode){
             console.log("error creating node");
             return 400;
@@ -98,12 +99,12 @@ module.exports = class Tree{
         return;
     }
 
-    printTree(){
-        console.log(this.root);
-        for(const child of this.root.children){
-            console.log(child);
-        }
-    }
+    // printTree(){
+    //     console.log(this.root);
+    //     for(const child of this.root.children){
+    //         console.log(child);
+    //     }
+    // }
 }
 
 function Node(node){

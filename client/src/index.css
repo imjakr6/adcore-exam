@@ -7,9 +7,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-*, html, body, #app, #app>div {
-  height: 100%
-}
+[data-reactroot] 
+        {height: 100% !important; }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
