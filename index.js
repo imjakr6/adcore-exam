@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const path = require('path');
 const NodeCache = require( "node-cache" );
-
 const parseCSV = require("./parseCSV.js");
 
 const app = express();
@@ -17,7 +16,7 @@ const options = {
 app.use(jsonParser);
 app.use(express.static(path.join(__dirname, './client/build' )));
 
-app.get('/reset-tree', (req, res) => {
+app.get('/reset_tree', (req, res) => {
     parseCSV(myCache, res);
 })
 
@@ -56,18 +55,20 @@ app.post('/create_node', urlencodedParser, (req, res) => {
     res.send(result);
 })
 
-app.post('/export_csv', (req, res) => {
-  // var json = json3.items
-  // var fields = Object.keys(json[0])
-  // var replacer = function(key, value) { return value === null ? '' : value } 
-  // var csv = json.map(function(row){
-  //   return fields.map(function(fieldName){
-  //     return JSON.stringify(row[fieldName], replacer)
-  //   }).join(',')
-  // })
-  // csv.unshift(fields.join(',')) // add header column
-  //  csv = csv.join('\r\n');
-  // console.log(csv)
+app.get('/export_csv', (req, res) => {
+  const tree = myCache.get("tree");
+  const queue = [tree.root];
+  const data = [];
+  while(queue.length){
+      const node = queue.shift();
+        if(node.children)
+          for(const child of node.children){
+              queue.push(child);
+          }
+        delete node.children;
+        data.push(node);
+      }
+    res.send(data);
 })
 
 app.get('*', (req, res) => {

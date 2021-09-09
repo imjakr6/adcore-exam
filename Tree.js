@@ -1,6 +1,12 @@
 module.exports = class Tree{
     constructor(){
-        const rootNode = {id: 0, name:"root"};
+        const rootNode = {
+        id: "0",
+        name: "root",
+        description: "root dec",
+        read_only: "1",
+        children: []
+        };
         this.root = new Node(rootNode);
     }
     // used when creating the tree
@@ -20,7 +26,6 @@ module.exports = class Tree{
 
     //used when adding node to exsisting tree
     createNode(parent, node, myCache){
-
         const tempNode = this.findNode(node.id)
         if(tempNode){
             console.log("Cannot duplicate ID's");

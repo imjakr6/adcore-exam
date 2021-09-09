@@ -6,11 +6,13 @@ import './App.css';
 import CreateNode from './CreateNode';
 import DeleteNode from './DeleteNode';
 import UpdateNode from './UpdateNode';
+import { ExportToCsv } from 'export-to-csv';
+
 
 class App extends Component {
   state = {
     loading: true,
-    root: {
+    tree: {
       id: "0",
       name: "root",
       description: "root dec",
@@ -24,8 +26,20 @@ class App extends Component {
 
   componentDidMount() {
     this.getTree()
-      .then(res => this.setState({ root: res.root, loading: false }))
+      .then(res => this.setState({ tree: res.root, loading: false }))
       .catch(err => console.log(err));
+  }
+
+  toggleCreateNode = () => {
+    this.setState({deleteNode: false, updateNode: false, createNode: !this.state.createNode})
+  }
+
+  toggleDeleteNode = () => {
+    this.setState({createNode: false, updateNode: false, deleteNode: !this.state.deleteNode})
+  }
+
+  toggleUpdateNode = () => {
+    this.setState({createNode: false, deleteNode: false, updateNode: !this.state.updateNode})
   }
 
   getTree = async () => {
@@ -39,11 +53,11 @@ class App extends Component {
   }
 
   resetTree = () => {
-    console.log("reset")
     this.getNewTree()
-      .then(res => this.setState({ root: res.root, loading: false }))
+      .then(res => this.setState({ tree: res.root, loading: false }))
       .catch(err => console.log(err))
   }
+
 
   getNewTree = async () => {
     const response = await fetch('/reset_tree');
@@ -55,18 +69,6 @@ class App extends Component {
       throw Error(body.message) 
     }
     return body;
-  }
-
-  toggleCreateNode = () => {
-    this.setState({deleteNode: false, updateNode: false, createNode: !this.state.createNode})
-  }
-
-  toggleDeleteNode = () => {
-    this.setState({createNode: false, updateNode: false, deleteNode: !this.state.deleteNode})
-  }
-
-  toggleUpdateNode = () => {
-    this.setState({createNode: false, deleteNode: false, updateNode: !this.state.updateNode})
   }
 
   createNode = (data) => {
@@ -105,11 +107,24 @@ class App extends Component {
         .catch(error => console.error('There was an error!', error));
   }
 
-  exportNode = () => {
-    axios.post('/export_node')
-        .then(response => console.log({response}))
-        .catch(error => console.error('There was an error!', error));
-  }
+  
+  exportNode = async () => {
+    const options = { 
+      fieldSeparator: ',',
+      useKeysAsHeaders: true,
+    };
+
+    const response = await fetch('/export_csv');
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message) 
+    }
+    // this.setState({ tree: res.root, loading: false })
+    console.log(body)
+    const csvExporter = new ExportToCsv(options);
+    csvExporter.generateCsv(body);
+}
 
   renderForeignObjectNode = ({
     nodeDatum,
@@ -129,16 +144,16 @@ class App extends Component {
   )};
 
   render() {
-    const {root, loading} = this.state;
+    const {tree, loading} = this.state;
     const foreignObjectProps = { width: 150, height: 150, x: 0 };
 
     if(!loading){
       return (
         <div className="page-container">
           <div className="tree-container">
-            <ReactTree data={root} orientation={"vertical"} depthFactor={400} nodeSize={{x: 200, y:150}} zoom={0.35} 
+            <ReactTree data={tree} orientation={"vertical"} depthFactor={400} nodeSize={{x: 200, y:150}} zoom={0.3} 
               renderCustomNodeElement={(rd3tProps) => this.renderForeignObjectNode({ ...rd3tProps, foreignObjectProps })}
-              separation={{nonSiblings: 1, siblings:1}} rootNodeClassName="node" branchNodeClassName="node" translate={{x:900, y:25}} //TODO: need to translate by calc
+              separation={{nonSiblings: 1, siblings:1}} rootNodeClassName="node" branchNodeClassName="node" translate={{x:window.innerWidth / 2, y:25}} //TODO: need to translate by calc
               />
           </div>
           <div className="btn-container">
@@ -146,7 +161,7 @@ class App extends Component {
             <button style={{marginRight: 5}} onClick={this.toggleCreateNode}>Create</button>
             <button style={{marginRight: 5}} onClick={this.toggleDeleteNode}>Delete</button>
             <button style={{marginRight: 5}} onClick={this.toggleUpdateNode}>Update</button>
-            {/* <button style={{marginRight: 5}} onClick={this.resetTree}>RESET TREE</button> */}
+            <button style={{marginRight: 5}} onClick={this.resetTree}>RESET TREE</button>
             <button onClick={this.exportNode}>Export</button>
             {this.state.createNode && <CreateNode onSubmit={(data) => this.createNode(data)}/>}
             {this.state.deleteNode && <DeleteNode onSubmit={(data) => this.deleteNode(data)}/>}
