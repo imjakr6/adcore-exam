@@ -4,6 +4,7 @@ module.exports = class Tree{
         id: "0",
         name: "root",
         description: "root dec",
+        parent: null,
         read_only: "1",
         children: []
         };
