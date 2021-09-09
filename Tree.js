@@ -19,8 +19,14 @@ module.exports = class Tree{
     }
 
     //used when adding node to exsisting tree
-    addNewNode(parent, node){
+    createNode(parent, node, myCache){
 
+        const tempNode = this.findNode(node.id)
+        if(tempNode){
+            console.log("Cannot duplicate ID's");
+            return 400;
+        }
+        
         const newNode = new Node(node);
         if(!newNode){
             console.log("error creating node");
@@ -32,6 +38,7 @@ module.exports = class Tree{
             return 400;
         }
         parentNode.children.push(newNode);
+        myCache.set("tree", this, 10000);
         return newNode.id;
     }
 
@@ -50,30 +57,28 @@ module.exports = class Tree{
             return 200;
     }
 
-    deleteNode(id){
+    deleteNode(id, myCache){
         const node = this.findNode(id);
-        const parentNode = this.findParentNode(id);
-
+        const parentNode = this.findParentNode(node.parent);
 
         if(!node){
             console.log("No node exists with that id");
                 return 400;
         }
-        if(node.read_only){
+        if(node.read_only == 1){
             console.log("cannot delete read only nodes");
             return 400;
         }
-        
         //if this node has children assign them to parent node
-        //TODO: loop through node.children and assignt their parent to new parent value
-        if(node.children){
-           parentNode.children = [...parentNode.children, node.children]
+        if(node.children.length > 0){
+           parentNode.children = [...parentNode.children, ...node.children]
         } 
-        const index =  parentNode.children.indexOf(id);
+        const index =  parentNode.children.indexOf(node);
         if (index > -1) {
             parentNode.children.splice(index, 1);
         }
-            return 200;
+        myCache.set("tree", this, 10000);
+        return 200;
     }
 
     findNode(id){

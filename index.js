@@ -17,7 +17,11 @@ const options = {
 app.use(jsonParser);
 app.use(express.static(path.join(__dirname, './client/build' )));
 
-app.get('/get_tree', async (req, res) => {
+app.get('/reset-tree', (req, res) => {
+    parseCSV(myCache, res);
+})
+
+app.get('/get_tree', (req, res) => {
     var tree = myCache.get("tree");
     if(tree)
       res.send(tree);
@@ -28,22 +32,23 @@ app.get('/get_tree', async (req, res) => {
 app.post('/update_node', urlencodedParser, (req, res) => {
     const id = req.body.id;
     const name = req.body.name;
-    var tree = myCache.get("tree");
-
-    var result = tree.updateNode(id, name, myCache);
+    const tree = myCache.get("tree");
+    const result = tree.updateNode(id, name, myCache);
     res.sendStatus(result);
 })
 
 app.post('/delete_node', urlencodedParser, (req, res) => {
     const id = req.body.id;
-    const result = tree.deleteNode(id);
+    const tree = myCache.get("tree");
+    const result = tree.deleteNode(id, myCache);
     res.sendStatus(result);
 })
 
 app.post('/create_node', urlencodedParser, (req, res) => {
     const parent = req.body.parent;
     const node = req.body.node;
-    const result = tree.addNewNode(parent, node);
+    const tree = myCache.get("tree");
+    const result = tree.createNode(parent, node, myCache);
     // TODO: have better check (cannot create node with id 400)
     if(result == 400)
     res.sendStatus(result);

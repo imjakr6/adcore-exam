@@ -23,14 +23,33 @@ class App extends Component {
   };
 
   componentDidMount() {
-    this.getRoot()
+    this.getTree()
       .then(res => this.setState({ root: res.root, loading: false }))
       .catch(err => console.log(err));
   }
 
-  getRoot = async () => {
+  getTree = async () => {
     const response = await fetch('/get_tree');
     const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message) 
+    }
+    return body;
+  }
+
+  resetTree = () => {
+    console.log("reset")
+    this.getNewTree()
+      .then(res => this.setState({ root: res.root, loading: false }))
+      .catch(err => console.log(err))
+  }
+
+  getNewTree = async () => {
+    const response = await fetch('/reset_tree');
+    console.log(response)
+    const body = await response.json();
+    console.log(body.body)
 
     if (response.status !== 200) {
       throw Error(body.message) 
@@ -94,19 +113,20 @@ class App extends Component {
 
   renderForeignObjectNode = ({
     nodeDatum,
-    toggleNode,
     foreignObjectProps
-  }) => (
+  }) => {
+    var backgroundColor = nodeDatum.read_only == 1 ? "red": "#dedede";
+    return(
     <g>
       <foreignObject {...foreignObjectProps}>
-        <div style={{ border: "1px solid black", backgroundColor: "#dedede" }}>
+        <div style={{ border: "1px solid black", backgroundColor: backgroundColor }}>
           <h1 style={{ textAlign: "center" }}>{nodeDatum.id}</h1>
           <h3 style={{ textAlign: "center" }}>{nodeDatum.name}</h3>
           <h5 style={{ textAlign: "center" }}>{nodeDatum.description}</h5>
         </div>
       </foreignObject>
     </g>
-  );
+  )};
 
   render() {
     const {root, loading} = this.state;
@@ -122,9 +142,11 @@ class App extends Component {
               />
           </div>
           <div className="btn-container">
+            <h5 style={{color: "red"}}>RED NODES ARE READ-ONLY</h5>
             <button style={{marginRight: 5}} onClick={this.toggleCreateNode}>Create</button>
             <button style={{marginRight: 5}} onClick={this.toggleDeleteNode}>Delete</button>
             <button style={{marginRight: 5}} onClick={this.toggleUpdateNode}>Update</button>
+            {/* <button style={{marginRight: 5}} onClick={this.resetTree}>RESET TREE</button> */}
             <button onClick={this.exportNode}>Export</button>
             {this.state.createNode && <CreateNode onSubmit={(data) => this.createNode(data)}/>}
             {this.state.deleteNode && <DeleteNode onSubmit={(data) => this.deleteNode(data)}/>}
