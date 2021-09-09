@@ -4,8 +4,10 @@ const async = require('async');
 const Tree = require('./Tree');
 const inputFile='tree_data.csv';
 
-module.exports = function parseCSV(tree, res){
-    if(tree.root.children){
+module.exports = parseCSV = (myCache, res) => {
+    var tree = myCache.get("tree");
+
+    if(!tree || tree.root.children){
         tree = new Tree();
     }
 
@@ -15,6 +17,7 @@ module.exports = function parseCSV(tree, res){
         console.error(err.message)
       })
     .on('end', () => {
+        myCache.set("tree", tree, 10000);
         res.send(tree);
     });
          

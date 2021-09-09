@@ -1,33 +1,36 @@
 const express = require('express');
 const bodyParser = require('body-parser')
 const path = require('path');
-const filePath = "./client/build/index.html"
-const resolvedPath = path.resolve(filePath);
-const options = {
-  root: __dirname + '/client/build/',
-};
+const NodeCache = require( "node-cache" );
 
 const parseCSV = require("./parseCSV.js");
-const Tree = require('./Tree.js');
 
 const app = express();
 const jsonParser = bodyParser.json()
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 const port = process.env.PORT || 5000;
-const tree = new Tree();
-var newTree;
-app.use(jsonParser);
+const myCache = new NodeCache();
+const options = {
+  root: __dirname + '/client/build/',
+};
 
+app.use(jsonParser);
 app.use(express.static(path.join(__dirname, './client/build' )));
 
 app.get('/get_tree', async (req, res) => {
-   newTree = parseCSV(tree, res);
+    var tree = myCache.get("tree");
+    if(tree)
+      res.send(tree);
+    else
+      parseCSV(myCache, res);
 })
 
 app.post('/update_node', urlencodedParser, (req, res) => {
     const id = req.body.id;
     const name = req.body.name;
-    var result = tree.updateNode(id, name);
+    var tree = myCache.get("tree");
+
+    var result = tree.updateNode(id, name, myCache);
     res.sendStatus(result);
 })
 

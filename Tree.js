@@ -2,7 +2,6 @@ module.exports = class Tree{
     constructor(){
         const rootNode = {id: 0, name:"root"};
         this.root = new Node(rootNode);
-
     }
     // used when creating the tree
     addNode(node){
@@ -36,17 +35,18 @@ module.exports = class Tree{
         return newNode.id;
     }
 
-    updateNode(id, name){
+    updateNode(id, name, myCache){
         const node = this.findNode(id);
         if(!node){
             console.log("No node exists with that id");
                 return 400;
         }
-        if(node.read_only){
+        if(node.read_only == 1){
             console.log("cannot update read only nodes");
             return 400;
         }
             node.name = name;
+            myCache.set("tree", this, 10000);
             return 200;
     }
 
